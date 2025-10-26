@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Undangan Digital</title>
+  <meta name="description" content="Undangan digital elegan dengan latar video, hitung mundur, RSVP, dan peta lokasi."/>
+  <link rel="preload" as="video" href="invite.mp4" type="video/mp4">
+  <style>
+    :root{
+      --bg: #0f0f12;
+      --fg: #f7f7f7;
+      --muted:#b7b7c2;
+      --primary:#e6c07b;
+      --glass: rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+    /* HERO */
+    .hero{
+      position:relative;
+      min-height:100dvh;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      isolation:isolate;
+    }
+    .hero video{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      filter:brightness(.55) saturate(1.1);
+      z-index:-1;
+    }
+    .overlay{
+      padding:clamp(16px, 3vw, 36px);
+      backdrop-filter:saturate(140%) blur(4px);
+      background:linear-gradient(180deg, rgba(15,15,18,.0), rgba(15,15,18,.35));
+    }
+    .tag{letter-spacing:.35em; text-transform:uppercase; color:var(--muted); font-size:.8rem}
+    h1{
+      margin:.25rem 0 0;
+      font-size:clamp(28px, 6vw, 64px);
+      font-weight:700;
+      line-height:1.12;
+    }
+    .date{
+      color:var(--primary);
+      font-weight:600;
+      font-size:clamp(14px, 2.5vw, 18px);
+      margin-top:.5rem;
+    }
+    .btn{
+      display:inline-block;
+      margin-top:1.25rem;
+      padding:.9rem 1.25rem;
+      border:1px solid rgba(255,255,255,.25);
+      border-radius:999px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      color:var(--fg);
+      text-decoration:none;
+      box-shadow:var(--shadow);
+      transition:.25s ease;
+      backdrop-filter:saturate(140%) blur(2px);
+    }
+    .btn:hover{ transform:translateY(-1px); border-color: rgba(255,255,255,.45);}
+    /* COUNTDOWN */
+    .section{
+      padding:64px 20px;
+      max-width:1100px;
+      margin-inline:auto;
+    }
+    .card{
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .countdown{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:12px;
+      padding:28px;
+    }
+    .timebox{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:16px;
+    }
+    .num{font-size:clamp(22px,5vw,40px); font-weight:700}
+    .label{font-size:.9rem; color:var(--muted)}
+    @media (max-width:720px){
+      .countdown{grid-template-columns:repeat(2, 1fr)}
+    }
+    /* DETAIL */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap:18px;
+      padding:28px;
+    }
+    @media (max-width:960px){ .grid{ grid-template-columns:1fr; } }
+    .tile{background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:16px}
+    .tile h3{margin:0 0 .35rem}
+    .muted{color:var(--muted)}
+    iframe{width:100%; height:320px; border:0; border-radius:14px}
+    /* AUDIO CONTROL */
+    .audio-toggle{
+      position:fixed; right:16px; bottom:16px; z-index:50;
+      display:flex; align-items:center; gap:.5rem;
+      padding:.6rem .85rem; border-radius:999px;
+      background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.2);
+      cursor:pointer; user-select:none; backdrop-filter:blur(4px) saturate(140%);
+    }
+    .audio-toggle span{font-size:.9rem}
+    /* FOOTER */
+    footer{ text-align:center; padding:40px 20px; color:var(--muted) }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- HERO with background video -->
+    <section class="hero" id="beranda">
+      <video id="bgVideo" src="invite.mp4" autoplay muted loop playsinline></video>
+      <div class="overlay">
+        <div class="tag">Undangan</div>
+        <h1 id="title">Nama Acara / Pasangan</h1>
+        <div class="date" id="dateText">Minggu, 1 Desember 2025 • 10.00 WITA</div>
+        <a href="#detail" class="btn">Buka Undangan</a>
+      </div>
+    </section>
+
+    <!-- COUNTDOWN -->
+    <section class="section" id="countdown">
+      <div class="card">
+        <div class="countdown" id="countdownGrid">
+          <div class="timebox"><div class="num" id="d">00</div><div class="label">Hari</div></div>
+          <div class="timebox"><div class="num" id="h">00</div><div class="label">Jam</div></div>
+          <div class="timebox"><div class="num" id="m">00</div><div class="label">Menit</div></div>
+          <div class="timebox"><div class="num" id="s">00</div><div class="label">Detik</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DETAIL & MAP -->
+    <section class="section" id="detail">
+      <div class="card">
+        <div class="grid">
+          <div class="tile">
+            <h3>Detail Acara</h3>
+            <div class="muted">Silakan ubah sesuai kebutuhan.</div>
+            <ul>
+              <li><strong>Acara:</strong> Resepsi Pernikahan</li>
+              <li><strong>Tanggal:</strong> 1 Desember 2025</li>
+              <li><strong>Waktu:</strong> 10.00 – 13.00 WITA</li>
+              <li><strong>Tempat:</strong> Balai Pertemuan Contoh, Makassar</li>
+              <li><strong>Alamat:</strong> Jl. Contoh No. 123</li>
+              <li><strong>Dresscode:</strong> Formal / Batik</li>
+            </ul>
+          </div>
+          <div class="tile">
+            <h3>Peta Lokasi</h3>
+            <iframe loading="lazy"
+              src="https://www.google.com/maps?q=-5.147665,119.432732&hl=id&z=15&output=embed"
+              allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div style="margin-top:.5rem">
+              <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=-5.147665,119.432732" target="_blank" rel="noopener">Buka di Google Maps</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RSVP -->
+    <section class="section" id="rsvp">
+      <div class="card" style="padding:28px">
+        <h3 style="margin-top:0">Konfirmasi Kehadiran</h3>
+        <p class="muted" style="margin-top:0">Isi formulir berikut untuk RSVP.</p>
+        <form id="formRSVP" class="grid" onsubmit="handleRSVP(event)">
+          <div class="tile">
+            <label>Nama Lengkap<br/><input required name="nama" placeholder="Tulis nama Anda" style="width:100%;padding:.8rem;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff"/></label>
+            <label style="display:block; margin-top:.75rem">Jumlah Tamu<br/><input type="number" min="1" value="1" name="jumlah" style="width:100%;padding:.8rem;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff"/></label>
+            <label style="display:block; margin-top:.75rem">Ucapan<br/><textarea name="ucapan" rows="3" placeholder="Tulis ucapan..." style="width:100%;padding:.8rem;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff"></textarea></label>
+            <button class="btn" type="submit">Kirim RSVP</button>
+          </div>
+          <div class="tile">
+            <div id="rsvpPreview" class="muted">Belum ada data.</div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <button class="audio-toggle" id="audioBtn" onclick="toggleAudio()">
+    <span id="audioIcon">🔇</span>
+    <span id="audioText">Suara Mati</span>
+  </button>
+
+  <footer>
+    © <span id="year"></span> Undangan Digital. Dibuat dengan kasih.
+  </footer>
+
+  <audio id="bgm" loop>
+    <!-- Ganti src di bawah jika ingin musik latar -->
+    <!-- <source src="music.mp3" type="audio/mpeg"> -->
+  </audio>
+
+  <script>
+    // ===== CONFIGURASI CEPAT (ubah secukupnya) =====
+    const ACARA_TITLE = "Rizki & Salma";
+    const ACARA_DATETIME = "2025-12-01T10:00:00+08:00"; // WITA
+    document.getElementById("title").textContent = ACARA_TITLE;
+    document.getElementById("dateText").textContent = "Minggu, 1 Desember 2025 • 10.00 WITA";
+
+    // ===== COUNTDOWN =====
+    const target = new Date(ACARA_DATETIME).getTime();
+    const ids = {d:"d", h:"h", m:"m", s:"s"};
+    function updateCountdown(){
+      const now = Date.now();
+      let diff = Math.max(0, target - now);
+      const d = Math.floor(diff / (1000*60*60*24)); diff -= d*24*60*60*1000;
+      const h = Math.floor(diff / (1000*60*60)); diff -= h*60*60*1000;
+      const m = Math.floor(diff / (1000*60)); diff -= m*60*1000;
+      const s = Math.floor(diff / 1000);
+      document.getElementById(ids.d).textContent = String(d).padStart(2,"0");
+      document.getElementById(ids.h).textContent = String(h).padStart(2,"0");
+      document.getElementById(ids.m).textContent = String(m).padStart(2,"0");
+      document.getElementById(ids.s).textContent = String(s).padStart(2,"0");
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ===== AUDIO TOGGLE =====
+    const audioEl = document.getElementById("bgm");
+    const audioBtn = document.getElementById("audioBtn");
+    const audioIcon = document.getElementById("audioIcon");
+    const audioText = document.getElementById("audioText");
+    function toggleAudio(){
+      if(audioEl.paused){
+        audioEl.play().then(()=>{
+          audioIcon.textContent = "🔊";
+          audioText.textContent = "Suara Nyala";
+        }).catch(()=>{});
+      }else{
+        audioEl.pause();
+        audioIcon.textContent = "🔇";
+        audioText.textContent = "Suara Mati";
+      }
+    }
+
+    // Autoplay background video on iOS/Android is already muted
+    const bgVideo = document.getElementById("bgVideo");
+    bgVideo.addEventListener("loadeddata", ()=>{
+      try { bgVideo.play(); } catch(e){}
+    });
+
+    // ===== RSVP (tanpa backend): preview data saja =====
+    function handleRSVP(e){
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const data = Object.fromEntries(fd.entries());
+      const preview = document.getElementById("rsvpPreview");
+      preview.innerHTML = `
+        <div><strong>Nama:</strong> ${data.nama}</div>
+        <div><strong>Jumlah:</strong> ${data.jumlah}</div>
+        <div><strong>Ucapan:</strong> ${data.ucapan || "-"}</div>
+        <div style="margin-top:.75rem" class="muted">*Ini contoh tanpa backend. Hubungkan ke Google Form / API bila perlu.</div>
+      `;
+      e.target.reset();
+    }
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener("click", (ev)=>{
+        const id = a.getAttribute("href").slice(1);
+        const el = document.getElementById(id);
+        if(el){ ev.preventDefault(); el.scrollIntoView({behavior:"smooth", block:"start"}); }
+      });
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
